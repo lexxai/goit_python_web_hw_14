@@ -17,7 +17,7 @@ from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from src.conf.config import settings
-from src.database.db import get_db
+from src.database.db import get_db, get_redis
 from src.routes import contacts, auth, users
 
 logger = logging.getLogger(f"{settings.app_name}")
@@ -31,7 +31,12 @@ logger.addHandler(handler)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.debug("lifespan before")
-    await startup()
+    try:
+        await startup()
+    except redis.ConnectionError as err:
+        logger.error(f"redis err: {err}")
+    except Exception as err:
+        logger.error(f"other app err: {err}")
     yield
     logger.debug("lifespan after")
 
@@ -44,8 +49,7 @@ app = FastAPI(lifespan=lifespan)  # type: ignore
 
 # @app.on_event("startup")
 async def startup():
-    r = await redis.Redis(host=settings.redis_host, port=settings.redis_port, db=0)
-    await FastAPILimiter.init(r)
+    await FastAPILimiter.init(get_redis())
     logger.debug("startup done")
 
 

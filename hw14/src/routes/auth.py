@@ -19,7 +19,7 @@ from fastapi.security import (
 from sqlalchemy.orm import Session
 
 from src.conf.config import settings
-from src.database.db import get_db
+from src.database.db import get_db, get_redis
 from src.database.models import User
 from src.shemas.users import UserResponse, UserModel, UserDetailResponse
 from src.shemas.auth import RequestEmail
@@ -125,6 +125,7 @@ async def get_current_user(
     refresh_token: Annotated[str | None, Cookie()] = None,
     token: str | None = Depends(auth_service.auth_scheme),
     db: Session = Depends(get_db),
+    cache=Depends(get_redis),
 ) -> User | None:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -141,9 +142,9 @@ async def get_current_user(
         logger.info("used cookie access_token")
         token = access_token
     if token:
-        user = await repository_auth.a_get_current_user(token, db)
+        user = await repository_auth.a_get_current_user(token, db, cache)
         if not user and token != access_token:
-            user = await repository_auth.a_get_current_user(access_token, db)
+            user = await repository_auth.a_get_current_user(access_token, db, cache)
         if not user and refresh_token:
             result = auth_service.refresh_access_token(refresh_token)
             logger.info(f"refresh_access_token  {result=}")
@@ -191,6 +192,7 @@ async def refresh_token(
     refresh_token: Annotated[str | None, Cookie()] = None,
     credentials: HTTPAuthorizationCredentials = Security(security),
     db: Session = Depends(get_db),
+    cache=Depends(get_redis),
 ):
     token: str = credentials.credentials
     logger.info(f"refresh_token {token=}")
@@ -200,7 +202,7 @@ async def refresh_token(
     logger.info(f"refresh_token {email=}")
     user: User | None = await repository_users.get_user_by_email(email, db)
     if user and user.refresh_token != token:  # type: ignore
-        await repository_users.update_user_refresh_token(user, None, db)
+        await repository_users.update_user_refresh_token(user, None, db, cache)
         response.delete_cookie(key="refresh_token", httponly=True, path="/api/")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -211,7 +213,7 @@ async def refresh_token(
         )
     new_access_token, expire_access_token = auth_service.create_access_token(data={"sub": email})
     new_refresh_token, expire_refresh_token = auth_service.create_refresh_token(data={"sub": email})
-    await repository_users.update_user_refresh_token(user, new_refresh_token, db)
+    await repository_users.update_user_refresh_token(user, new_refresh_token, db, cache)
     if SET_COOKIES:
         if new_access_token:
             response.set_cookie(
@@ -243,14 +245,14 @@ async def refresh_token(
 
 
 @router.get("/confirmed_email/{token}")
-async def confirmed_email(token: str, db: Session = Depends(get_db)):
+async def confirmed_email(token: str, db: Session = Depends(get_db), cache=Depends(get_redis)):
     email = auth_service.get_email_from_token(token)
     if email:
         user = await repository_users.get_user_by_email(email, db)
         if user:
             if bool(user.confirmed):
                 return {"message": "Your email is already confirmed"}
-            await repository_users.confirmed_email(email, db)
+            await repository_users.confirmed_email(email, db, cache)
             return {"message": "Email confirmed"}
     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Verification error")
 

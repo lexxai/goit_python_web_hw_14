@@ -11,22 +11,22 @@ from src.repository import users as repository_users
 logger = logging.getLogger(f"{settings.app_name}.{__name__}")
 
 
-async def a_get_current_user(token: str | None, db: Session) -> User | None:
+async def a_get_current_user(token: str | None, db: Session, cache = None) -> User | None:
     if not token:
         return None
     email = auth_service.decode_jwt(token)
     if email is None:
         return None
-    user = await repository_users.get_cache_user_by_email(email)
+    user = await repository_users.get_cache_user_by_email(email, cache)
     if user is None:
         user = await repository_users.get_user_by_email(email, db)
         if user:
-            await repository_users.update_cache_user(user)
+            await repository_users.update_cache_user(user, cache)
 
     return user
 
 
-async def signup(body, db: Session):
+async def signup(body, db: Session, cache = None):
     try:
         user = await repository_users.get_user_by_name(body.username, db)
         if user is not None:
@@ -34,7 +34,7 @@ async def signup(body, db: Session):
         body.password = auth_service.get_password_hash(body.password)
         # if not body.email:
         #     body.email = body.username
-        new_user = await repository_users.create_user(body, db)
+        new_user = await repository_users.create_user(body, db, cache)
     except Exception:
         return None
     return new_user

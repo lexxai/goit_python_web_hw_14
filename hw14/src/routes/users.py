@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, status, UploadFile, File
 from sqlalchemy.orm import Session
 
 
-from src.database.db import get_db
+from src.database.db import get_db, get_redis
 from src.database.models import User
 from src.repository import users as repository_users
 from src.routes.auth import get_current_user
@@ -23,10 +23,10 @@ async def read_users_me(current_user: User = Depends(get_current_user)):
 
 @router.patch("/avatar", response_model=UserResponse, response_model_exclude_unset=True)
 async def update_avatar_user(
-    file: UploadFile = File(), current_user: User = Depends(get_current_user), db: Session = Depends(get_db)
+    file: UploadFile = File(), current_user: User = Depends(get_current_user), db: Session = Depends(get_db), cache = Depends(get_redis)
 ):
     public_id = Cloudinary.generate_public_id_by_email(str(current_user.email))
     r = Cloudinary.upload(file.file, public_id)
     src_url = Cloudinary.generate_url(r, public_id)
-    user = await repository_users.update_avatar(current_user.email, src_url, db)  # type: ignore
+    user = await repository_users.update_avatar(current_user.email, src_url, db, cache)  # type: ignore
     return user
