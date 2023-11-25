@@ -20,7 +20,7 @@ GoIT, Python WEB, Homework number 14. Documentation. Testing.
 #  Виконання
 
 ## 1. Sphinx документація
-1.1 Встановити `sphinx`: 
+### Встановити `sphinx`: 
 ```
 poetry add sphinx --group dev
 ``` 
@@ -29,7 +29,16 @@ poetry add sphinx --group dev
 poetry update
 ```
 
-1.2. sphinx-quickstart
+### sphinx-build
+![](doc/docs-02.png)
+
+### sphinx html
+![](doc/docs-04.png)
+
+![](doc/docs-01.png)
+
+### sphinx static html link 'Sphinx Doc' on main page
+![](doc/docs-03.png)
 
 
 

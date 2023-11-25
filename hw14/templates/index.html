@@ -6,7 +6,7 @@
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Hugo 0.84.0">
-    <title>GO IT, HOME WORK 13</title>
+    <title>GO IT, {{tilte}}</title>
     <link rel="icon" href="{{ url_for('static', path='/favicon.ico') }}">
     <!-- Bootstrap core CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
@@ -38,8 +38,8 @@
       <h3 class="float-md-start mb-0">GoIT WEB</h3>
       <nav class="nav nav-masthead justify-content-center float-md-end">
         <a class="nav-link active" aria-current="page" href="#">Home</a>
-        <a class="nav-link" target="_blank" href="https://github.com/lexxai/goit_python_web_hw_13/">Features</a>
-        <a class="nav-link" target="_blank" href="https://github.com/lexxai/goit_python_web_hw_13">Contact</a>
+        <a class="nav-link" target="_blank" href="https://github.com/lexxai/goit_python_web_hw_14/">Features</a>
+        <a class="nav-link" target="_blank" href="https://github.com/lexxai/goit_python_web_hw_14">Contact</a>
       </nav>
     </div>
   </header>
@@ -53,50 +53,38 @@
         <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
         <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="3" aria-label="Slide 4"></button>
         <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="4" aria-label="Slide 5"></button>
-        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="5" aria-label="Slide 6"></button>
-
       </div>
       <div class="carousel-inner" style="padding: 50px; height: 250px;">
         <div class="carousel-item active">
           <h4>Мета цього домашнього завдання</h4>
           <p class="lead">
-            У цьому домашньому завданні ми продовжуємо доопрацьовувати застосунок REST API із домашнього [ <a target="_blank" href="https://github.com/lexxai/goit_python_web_hw_12">завдання 12</a> ]
+            У цьому домашньому завданні ми продовжуємо доопрацьовувати застосунок REST API із домашнього [ <a target="_blank" href="https://github.com/lexxai/goit_python_web_hw_13">завдання 13</a> ]
          </p>
         </div>
         <div class="carousel-item">
           <h4>Завдання:</h4>
           <p class="lead">
-            Реалізуйте механізм верифікації електронної пошти зареєстрованого користувача
+            1. За допомогою `Sphinx` створіть документацію для вашого домашнього завдання. Для цього додайте в основних модулях до необхідних функцій і методів класів рядки `docstrings`.
          </p>
         </div>
         <div class="carousel-item">
           <h4>Завдання:</h4>
           <p class="lead">
-            Обмежуйте кількість запитів до своїх маршрутів контактів. Обов’язково обмежте швидкість - створення контактів для користувача.
+            2. Покрийте модульними тестами модулі репозиторію домашнього завдання, використовуючи фреймворк `Unittest`. За основу візьміть приклад із конспекту для модуля `tests/test_unit_repository_notes.py`
           </p>
           <p class="lead">
-            Увімкніть CORS для свого REST API.
           </p>
         </div>
         <div class="carousel-item">
           <h4>Завдання:</h4>
           <p class="lead">
-            Реалізуйте можливість оновлення аватара користувача. Використовуйте сервіс Cloudinary.
+            3. Покрийте функціональними тестами будь-який маршрут на вибір з вашого домашнього завдання, використовуючи фреймворк pytest.
           </p>
         </div>  
         <div class="carousel-item">
-          <h4> Загальні вимоги:</h4>
-          <p class="lead">
-            - Усі змінні середовища повинні зберігатися у файлі .env. Всередині коду не повинно бути конфіденційних даних у «чистому» вигляді.<br>
-            - Для запуску всіх сервісів і баз даних у застосунку використовується Docker Compose.
-          </p>
-        </div> 
-        <div class="carousel-item">
           <h4>Дотаково</h4>
           <p class="lead">
-            У цьому домашньому завданні необхідно доопрацювати застосунок Django із домашнього завдання 10.<br>
-            2.1. Реалізуйте механізм скидання паролю для зареєстрованого користувача.<br>
-            2.2. Усі змінні середовища повинні зберігатися у файлі .env та використовуватися у файлі settings.py.
+            4. Покрийте ваше домашнє завдання тестами більш ніж на 95%. Для контролю використовуйте пакет `pytest-cov`
           </p>
         </div>                    
       </div>
@@ -110,6 +98,7 @@
       </button>
     </div>
     <a href="docs/" class="btn btn-lg btn-secondary fw-bold border-white bg-white">API DOC</a>
+    <a href="sphinx/" class="btn btn-lg btn-secondary fw-bold border-white bg-white">Sphinx DOC</a>
     <a href="static/client/index.html" class="btn btn-lg btn-secondary fw-bold border-white bg-white">JavaScript Web Client</a>
   </main>
 

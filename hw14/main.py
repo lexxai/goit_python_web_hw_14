@@ -63,15 +63,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
-app.mount("/static", StaticFiles(directory="static"), name="static")
+def add_static(_app):
+    _app.mount(path="/static", app=StaticFiles(directory=settings.STATIC_DIRECTORY), name="static")
+    _app.mount(path="/sphinx", app=StaticFiles(directory=settings.SPHINX_DIRECTORY, html=True), name="sphinx")
 
 templates = Jinja2Templates(directory="templates")
 
 
 @app.get("/", response_class=HTMLResponse)
 async def main(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request, "tilte": f"HW13 APP {settings.app_name.upper()}"})
+    return templates.TemplateResponse("index.html", {"request": request, "tilte": f"{settings.app_version.upper()} APP {settings.app_name.upper()}"})
 
 
 @app.get("/api/healthchecker")
@@ -101,6 +102,8 @@ app.include_router(
     dependencies=[Depends(RateLimiter(times=settings.reate_limiter_times, seconds=settings.reate_limiter_seconds))],
 )
 app.include_router(users.router, prefix="/api")
+
+add_static(app)
 
 
 if __name__ == "__main__":

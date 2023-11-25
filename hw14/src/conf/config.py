@@ -4,7 +4,9 @@ from pathlib import Path
 from dotenv import load_dotenv
 from pydantic_settings import BaseSettings
 
-BASE_PATH = Path(__file__).resolve().parent.parent.parent.parent
+
+BASE_PATH_PROJECT = Path(__file__).resolve().parent.parent.parent
+BASE_PATH = BASE_PATH_PROJECT.parent
 load_dotenv(BASE_PATH.joinpath(".env"))
 APP_ENV = environ.get("APP_ENV")
 # print(APP_ENV)
@@ -14,6 +16,7 @@ APP_ENV = environ.get("APP_ENV")
 
 class Settings(BaseSettings):
     app_mode: str = "prod"
+    app_version: str = "hw"
     app_name: str = "contacts"
     app_host: str = "0.0.0.0"
     app_port: int = 9000
@@ -33,7 +36,8 @@ class Settings(BaseSettings):
     cloudinary_api_secret: str = "some_secret"
     reate_limiter_times: int = 2
     reate_limiter_seconds: int = 5
-
+    SPHINX_DIRECTORY: str = str(BASE_PATH_PROJECT.joinpath("docs", "_build", "html"))
+    STATIC_DIRECTORY: str = str(BASE_PATH_PROJECT.joinpath("static"))
 
     class Config:
         extra = "ignore"
