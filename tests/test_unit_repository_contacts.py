@@ -2,21 +2,20 @@ import sys
 import os
 import unittest
 from unittest.mock import MagicMock
-from pathlib  import Path
+from pathlib import Path
 
 from sqlalchemy.orm import Session
 
-hw_path: str =  str(Path(__file__).resolve().parent.parent.joinpath("hw14"))
+hw_path: str = str(Path(__file__).resolve().parent.parent.joinpath("hw14"))
 sys.path.append(hw_path)
 # print(f"{hw_path=}", sys.path)
 os.environ["PYTHONPATH"] += os.pathsep + hw_path
 # print(f'{os.environ["PYTHONPATH"]=}')
 
 
-
-from hw14.src.database.models import  User, Contact
-from hw14.src.shemas.contact   import ContactModel, ContactFavoriteModel, ContactResponse
-from hw14.src.shemas.users import UserModel, UserResponse, UserDetailResponse, NewUserResponse   
+from hw14.src.database.models import User, Contact
+from hw14.src.shemas.contact import ContactModel, ContactFavoriteModel, ContactResponse
+from hw14.src.shemas.users import UserModel, UserResponse, UserDetailResponse, NewUserResponse
 
 from hw14.src.repository.contacts import (
     get_contacts,
@@ -26,8 +25,9 @@ from hw14.src.repository.contacts import (
     update,
     delete,
     favorite_update,
-    search_birthday
+    search_birthday,
 )
+
 
 class TestContacts(unittest.IsolatedAsyncioTestCase):
     def setUp(self):
@@ -41,27 +41,32 @@ class TestContacts(unittest.IsolatedAsyncioTestCase):
         if favorite is not None:
             q = q.filter_by()
         q.offset().limit().all.return_value = contacts
-        result = await get_contacts(skip=0, limit=10, user_id=self.user.id, favorite=favorite, db=self.session) # type: ignore
+        result = await get_contacts(skip=0, limit=10, user_id=self.user.id, favorite=favorite, db=self.session)  # type: ignore
         self.assertEqual(result, contacts)
-
 
     async def test_get_contact_found_by_id(self):
         contact = Contact()
         self.session.query().filter_by().first.return_value = contact
-        result = await get_contact_by_id(contact_id=1, user_id=self.user.id, db=self.session) # type: ignore
-        self.assertEqual(result, contact)    
-    
+        result = await get_contact_by_id(contact_id=1, user_id=self.user.id, db=self.session)  # type: ignore
+        self.assertEqual(result, contact)
+
     async def test_get_contact_found_by_email(self):
         contact = Contact()
         self.session.query().filter_by().first.return_value = contact
-        result = await get_contact_by_email(email="as@ee.ua", user_id=self.user.id, db=self.session) # type: ignore
+        result = await get_contact_by_email(email="as@ee.ua", user_id=self.user.id, db=self.session)  # type: ignore
         self.assertEqual(result, contact)
 
-    # async def test_get_note_found(self):
-    #     note = Note()
-    #     self.session.query().filter().first.return_value = note
-    #     result = await get_note(note_id=1, user=self.user, db=self.session)
-    #     self.assertEqual(result, note)        
+    async def test_get_contact_not_found_by_id(self):
+        contact = Contact()
+        self.session.query().filter_by().first.return_value = None
+        result = await get_contact_by_id(contact_id=1, user_id=self.user.id, db=self.session)  # type: ignore
+        self.assertIsNone(result)
+
+    async def test_get_contact_not_found_by_email(self):
+        contact = Contact()
+        self.session.query().filter_by().first.return_value = None
+        result = await get_contact_by_email(email="as@ee.ua", user_id=self.user.id, db=self.session)  # type: ignore
+        self.assertIsNone(result)
 
 
 # class TestNotes(unittest.IsolatedAsyncioTestCase):
@@ -141,5 +146,5 @@ class TestContacts(unittest.IsolatedAsyncioTestCase):
 #         self.assertIsNone(result)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
