@@ -1,3 +1,4 @@
+from datetime import date, timedelta
 import sys
 import os
 import unittest
@@ -5,6 +6,7 @@ from unittest.mock import MagicMock
 from pathlib import Path
 
 from sqlalchemy.orm import Session
+from sqlalchemy import select, text, extract, desc
 
 hw_path: str = str(Path(__file__).resolve().parent.parent.joinpath("hw14"))
 sys.path.append(hw_path)
@@ -14,7 +16,7 @@ os.environ["PYTHONPATH"] += os.pathsep + hw_path
 
 
 from hw14.src.database.models import User, Contact
-from hw14.src.shemas.contact import ContactModel, ContactFavoriteModel, ContactResponse
+from hw14.src.shemas.contact import ContactModel, ContactFavoriteModel
 from hw14.src.shemas.users import UserModel, UserResponse, UserDetailResponse, NewUserResponse
 
 from hw14.src.repository.contacts import (
@@ -114,6 +116,20 @@ class TestContacts(unittest.IsolatedAsyncioTestCase):
         self.session.query().filter_by().first.return_value = None
         result = await favorite_update(contact_id=1, body=body, user_id=self.user.id, db=self.session)  # type: ignore
         self.assertIsNone(result)
+
+    async def test_get_contact_search_birthday(self):
+        date_now = date.today()
+        bd1 = date_now.replace(year=1990) + timedelta(days=2)
+        bd2 = date_now.replace(year=2000) + timedelta(days=3)
+        bd3 = date_now.replace(year=2010) + timedelta(days=4)
+        bd4 = date_now.replace(year=2011) + timedelta(days=25)
+        contacts = [Contact(birthday=bd1), Contact(birthday=bd2), Contact(birthday=bd3), Contact(birthday=bd4)]
+        param = {"days": 7, "skip": 0, "limit": 10}
+        query = select().where().order_by()
+        self.session.execute(query).scalars.return_value = contacts
+        result = await search_birthday(param=param, user_id=self.user.id, db=self.session)  # type: ignore
+        self.assertEqual(result, contacts[:-1])
+
 
 
 if __name__ == "__main__":
