@@ -34,8 +34,9 @@ async def get_contacts(
     """
     query = db.query(Contact).filter_by(user_id=user_id)
     if favorite is not None:
-        query = query.filter_by(user_id=user_id)
+        query = query.filter_by(favorite=favorite)
     contacts = query.offset(skip).limit(limit).all()
+    # contacts = db.query(Contact).filter_by(user_id = user_id).offset(skip).limit(limit).all()
     return contacts
 
 
@@ -192,7 +193,7 @@ async def search_contacts(param: dict, user_id: int, db: Session) -> List[Contac
 
 
 def date_replace_year(d: date, year: int) -> date:
-    """Function for replacing the year in the date, if the date is not in the year to be replaced, 
+    """Function for replacing the year in the date, if the date is not in the year to be replaced,
     then we get the next day for this date in this year.
 
     :param d: Source date
@@ -217,7 +218,7 @@ def date_replace_year(d: date, year: int) -> date:
 
 async def search_birthday(param: dict, user_id: int, db: Session) -> List[Contact]:
     """
-    Retrieves a list of contacts for a specific user with the specified birthday search parameters 
+    Retrieves a list of contacts for a specific user with the specified birthday search parameters
     for the next few days and pagination parameters.
 
     :param param: This is dictionary of parameters for search contacts. Dictionary keys:
