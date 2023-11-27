@@ -237,7 +237,8 @@ async def search_birthday(param: dict, user_id: int, db: Session) -> List[Contac
     """
     days: int = int(param.get("days", 7)) + 1
     # days = 67
-    date_now = date.today()
+    date_now = param.get("fixed_now",  date.today())
+    # date_now = date.today()
     # date_now = date(2023, 2, 25)
     date_now_year = date_now.year
     date_now_month = date_now.month

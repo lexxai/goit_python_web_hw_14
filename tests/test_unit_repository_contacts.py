@@ -128,7 +128,17 @@ class TestContacts(unittest.IsolatedAsyncioTestCase):
         query = select().where().order_by()
         self.session.execute(query).scalars.return_value = contacts
         result = await search_birthday(param=param, user_id=self.user.id, db=self.session)  # type: ignore
-        self.assertEqual(result, contacts[:-1])
+        self.assertEqual(result, contacts[:-1])   
+        
+    async def test_get_contact_search_birthday_leap(self):
+        date_now = date.today()
+        bd1 = date(1988,2,29)
+        contacts = [Contact(birthday=bd1)]
+        param = {"days": 7, "skip": 0, "limit": 10, "fixed_now": date(2023,2,27)}
+        query = select().where().order_by()
+        self.session.execute(query).scalars.return_value = contacts
+        result = await search_birthday(param=param, user_id=self.user.id, db=self.session)  # type: ignore
+        self.assertEqual(result, contacts)
 
 
 
