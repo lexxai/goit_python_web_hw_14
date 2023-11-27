@@ -10,12 +10,28 @@ from src.services.auth.auth import auth_service
 logger = logging.getLogger(f"{settings.app_name}.{__name__}")
 
 class EmailSchema(BaseModel):
+    """Class EmailSchema
+
+    :param BaseModel: _description_
+    :type BaseModel: _type_
+    """
     email: EmailStr
     fullname: str = "Sender Name"
     subject: str = "Sender Subject topic"
 
 
 async def send_email(email: str, username: str, host: str):
+    """Service email send_email
+
+    :param email: _description_
+    :type email: str
+    :param username: _description_
+    :type username: str
+    :param host: _description_
+    :type host: str
+    :return: _description_
+    :rtype: _type_
+    """
     try:
         token_verification = auth_service.create_email_token({"sub": email})
         message = MessageSchema(

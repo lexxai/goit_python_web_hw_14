@@ -85,7 +85,7 @@ REST API service Email
 
 REST API service Cloudinary
 =============================
-.. automodule:: src.services.cloudinary
+.. automodule:: src.services.srv_cloudinary
   :members:
   :undoc-members:
   :show-inheritance:
