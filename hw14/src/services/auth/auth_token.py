@@ -49,11 +49,16 @@ class AuthToken(PassCrypt):
     def create_access_token(self, data: dict[str, Any], expires_delta: Optional[float] = None) -> tuple[str, datetime]:
         to_encode = data.copy()
         if expires_delta:
-            expire = datetime.utcnow() + timedelta(seconds=expires_delta)
+            timed: timedelta = timedelta(seconds=expires_delta)
         else:
-            expire = datetime.utcnow() + timedelta(minutes=15)
+            timed: timedelta = timedelta(minutes=15)
+
+        expire: datetime = datetime.utcnow() + timed
         expire = expire.replace(tzinfo=timezone.utc)
-        to_encode.update({"iat": datetime.utcnow(), "exp": expire, "scope": "access_token"})
+
+        to_encode.update(
+            {"iat": datetime.utcnow(), "exp": expire, "scope": "access_token", "exp_sec": timed.total_seconds()}
+        )
         encoded_access_token = self.encode_jwt(to_encode)
         return encoded_access_token, expire
 
