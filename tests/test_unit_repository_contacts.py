@@ -36,20 +36,24 @@ class TestContacts(unittest.IsolatedAsyncioTestCase):
 
     async def test_get_contacts(self):
         contacts = [Contact(), Contact(), Contact()]
-
         favorite = True
-
         q = self.session.query().filter_by()
         if favorite is not None:
             q = q.filter_by()
         q.offset().limit().all.return_value = contacts
-
-        # self.session.query().filter().offset().limit().all.return_value = contacts
-        result = await get_contacts(skip=0, limit=10, user_id=self.user.id, favorite=favorite, db=self.session)
-        # print(f"{result=}")
-        # print(f"{contacts=}")
-        # print(f"{self.user =}")
+        result = await get_contacts(skip=0, limit=10, user_id=self.user.id, favorite=favorite, db=self.session) # type: ignore
         self.assertEqual(result, contacts)
+
+
+    async def test_get_contacts_found(self):
+        contact = Contact()
+
+        self.session.query().filter_by().first.return_value = contact
+
+        result = await get_contact_by_id(contact_id=1, user_id=self.user.id, db=self.session) # type: ignore
+        self.assertEqual(result, contact)
+
+        
 
 
 # class TestNotes(unittest.IsolatedAsyncioTestCase):
