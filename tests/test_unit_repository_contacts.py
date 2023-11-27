@@ -57,26 +57,29 @@ class TestContacts(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result, contact)
 
     async def test_get_contact_not_found_by_id(self):
-        contact = Contact()
         self.session.query().filter_by().first.return_value = None
         result = await get_contact_by_id(contact_id=1, user_id=self.user.id, db=self.session)  # type: ignore
         self.assertIsNone(result)
 
     async def test_get_contact_not_found_by_email(self):
-        contact = Contact()
         self.session.query().filter_by().first.return_value = None
         result = await get_contact_by_email(email="as@ee.ua", user_id=self.user.id, db=self.session)  # type: ignore
         self.assertIsNone(result)
 
-
     async def test_create_contact(self):
-        body = ContactModel(first_name="test1", last_name="test2", email="aa@uu.uu",phone="+380 (44) 1234567")
-        result = await create(body=body, user_id=self.user.id, db=self.session) # type: ignore
+        body = ContactModel(first_name="test1", last_name="test2", email="aa@uu.uu", phone="+380 (44) 1234567")
+        result = await create(body=body, user_id=self.user.id, db=self.session)  # type: ignore
         self.assertEqual(result.first_name, body.first_name)
         self.assertEqual(result.last_name, body.last_name)
         self.assertEqual(result.email, body.email)
         self.assertEqual(result.phone, body.phone)
         self.assertTrue(hasattr(result, "id"))
+
+    async def test_remove_contact_found(self):
+        contact = Contact()
+        self.session.query().filter_by().first.return_value = contact
+        result = await delete(contact_id=1, user_id=self.user.id, db=self.session)  # type: ignore
+        self.assertEqual(result, contact)
 
 
 # class TestNotes(unittest.IsolatedAsyncioTestCase):
