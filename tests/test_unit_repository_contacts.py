@@ -45,15 +45,23 @@ class TestContacts(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result, contacts)
 
 
-    async def test_get_contacts_found(self):
+    async def test_get_contact_found_by_id(self):
         contact = Contact()
-
         self.session.query().filter_by().first.return_value = contact
-
         result = await get_contact_by_id(contact_id=1, user_id=self.user.id, db=self.session) # type: ignore
+        self.assertEqual(result, contact)    
+    
+    async def test_get_contact_found_by_email(self):
+        contact = Contact()
+        self.session.query().filter_by().first.return_value = contact
+        result = await get_contact_by_email(email="as@ee.ua", user_id=self.user.id, db=self.session) # type: ignore
         self.assertEqual(result, contact)
 
-        
+    # async def test_get_note_found(self):
+    #     note = Note()
+    #     self.session.query().filter().first.return_value = note
+    #     result = await get_note(note_id=1, user=self.user, db=self.session)
+    #     self.assertEqual(result, note)        
 
 
 # class TestNotes(unittest.IsolatedAsyncioTestCase):
