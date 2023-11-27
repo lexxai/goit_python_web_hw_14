@@ -69,6 +69,16 @@ class TestContacts(unittest.IsolatedAsyncioTestCase):
         self.assertIsNone(result)
 
 
+    async def test_create_contact(self):
+        body = ContactModel(first_name="test1", last_name="test2", email="aa@uu.uu",phone="+380 (44) 1234567")
+        result = await create(body=body, user_id=self.user.id, db=self.session) # type: ignore
+        self.assertEqual(result.first_name, body.first_name)
+        self.assertEqual(result.last_name, body.last_name)
+        self.assertEqual(result.email, body.email)
+        self.assertEqual(result.phone, body.phone)
+        self.assertTrue(hasattr(result, "id"))
+
+
 # class TestNotes(unittest.IsolatedAsyncioTestCase):
 
 #     def setUp(self):
