@@ -81,6 +81,11 @@ class TestContacts(unittest.IsolatedAsyncioTestCase):
         result = await delete(contact_id=1, user_id=self.user.id, db=self.session)  # type: ignore
         self.assertEqual(result, contact)
 
+    async def test_remove_contact_not_found(self):
+        self.session.query().filter_by().first.return_value = None
+        result = await delete(contact_id=1, user_id=self.user.id, db=self.session)  # type: ignore
+        self.assertIsNone(result)
+
 
 # class TestNotes(unittest.IsolatedAsyncioTestCase):
 
