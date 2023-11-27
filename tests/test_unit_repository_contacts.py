@@ -95,6 +95,38 @@ class TestContacts(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result, contact)
 
 
+    async def test_update_contact_not_found(self):
+        body = ContactModel(first_name="test1-1", last_name="test2-1", email="aa@uu.uu", phone="+380 (44) 1234567")
+        self.session.query().filter_by().first.return_value = None
+        self.session.commit.return_value = None
+        result = await update(contact_id=1, body=body, user_id=self.user.id, db=self.session) # type: ignore
+        self.assertIsNone(result)
+
+#     async def test_update_status_note_found(self):
+#         body = NoteStatusUpdate(done=True)
+#         note = Note()
+#         self.session.query().filter().first.return_value = note
+#         self.session.commit.return_value = None
+#         result = await update_status_note(note_id=1, body=body, user=self.user, db=self.session)
+#         self.assertEqual(result, note)
+
+#     async def test_update_status_note_not_found(self):
+#         body = NoteStatusUpdate(done=True)
+#         self.session.query().filter().first.return_value = None
+#         self.session.commit.return_value = None
+#         result = await update_status_note(note_id=1, body=body, user=self.user, db=self.session)
+#         self.assertIsNone(result)
+
+
+
+
+
+
+
+
+
+
+
 # class TestNotes(unittest.IsolatedAsyncioTestCase):
 
 #     def setUp(self):
