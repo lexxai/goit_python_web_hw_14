@@ -102,13 +102,14 @@ class TestContacts(unittest.IsolatedAsyncioTestCase):
         result = await update(contact_id=1, body=body, user_id=self.user.id, db=self.session) # type: ignore
         self.assertIsNone(result)
 
-#     async def test_update_status_note_found(self):
-#         body = NoteStatusUpdate(done=True)
-#         note = Note()
-#         self.session.query().filter().first.return_value = note
-#         self.session.commit.return_value = None
-#         result = await update_status_note(note_id=1, body=body, user=self.user, db=self.session)
-#         self.assertEqual(result, note)
+    async def test_update_favorite_contact_found(self):
+        body = ContactFavoriteModel(favorite=True)
+        contact = Contact()
+        self.session.query().filter_by().first.return_value = contact
+        result = await favorite_update(contact_id=1, body=body, user_id=self.user.id, db=self.session) # type: ignore
+        self.assertEqual(result, contact)
+
+
 
 #     async def test_update_status_note_not_found(self):
 #         body = NoteStatusUpdate(done=True)
