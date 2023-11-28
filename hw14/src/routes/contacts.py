@@ -157,7 +157,7 @@ async def get_contact(
     response_model=ContactResponse,
     status_code=status.HTTP_201_CREATED,
     description=f"No more than  {settings.reate_limiter_times} requests per {settings.reate_limiter_seconds} seconds",
-    dependencies=[Depends(RateLimiter(times=settings.reate_limiter_times, seconds=settings.reate_limiter_seconds))],
+    # dependencies=[Depends(RateLimiter(times=settings.reate_limiter_times, seconds=settings.reate_limiter_seconds))],
 )
 async def create_contact(
     body: ContactModel,

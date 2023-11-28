@@ -20,7 +20,7 @@ from src.database.models import Base
 from src.database.db import get_db
 
 db_path = curr_path / "test.sqlite"
-SQLALCHEMY_DATABASE_URL = f"sqlite:///{db_path}"  
+SQLALCHEMY_DATABASE_URL = f"sqlite:///{db_path}"
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -55,25 +55,28 @@ def client(session):
     yield TestClient(app)
 
 
-# @pytest.fixture(scope="module")
-# def get_contact(contact_id):
-#     result = {
-#         "id": 1,
-#         "first_name": "aaaa",
-#         "last_name": "bbbbb",
-#         "email": "aaa@uu.cc",
-#         "phone": None,
-#         "birthday": None,
-#         "comments": None,
-#         "favorite": False,
-#         "created_at": datetime.now(),
-#         "updated_at": datetime.now(),
-#         "user": {"id": int, "username": "user1", "email": "aass@www.ii", "avatar": None, "role": "user"},
-#     }
-#     return result
+@pytest.fixture(scope="module")
+def user():
+    return {
+        "username": "lexxaiedu",
+        "email": "lexxaiedu@example.com",
+        "password": "qwerty",
+        "avatar": None,
+        "role": "user",
+    }
 
 
 @pytest.fixture(scope="module")
-def user():
-    return {"username": "lexxaiedu", "email": "lexxaiedu@example.com", "password": "qwerty"}
-
+def contact():
+    result = {
+        "first_name": "aaaa",
+        "last_name": "bbbbb",
+        "email": "aaa@uu.cc",
+        "phone": None,
+        "birthday": None,
+        "comments": None,
+        "favorite": False,
+        "user_id": 1
+        # "user": {"id": 1, "username": "lexxaiedu", "email": "lexxaiedu@example.com", "avatar": None, "role": "user"},
+    }
+    return result
