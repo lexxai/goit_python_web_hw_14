@@ -30,6 +30,7 @@ faker = "^20.0.3"
 sphinx = "^7.2.6"
 pytest = "^7.4.3"
 pytest-mock = "^3.12.0"
+httpx = "^0.25.2"
 
 [build-system]
 requires = ["poetry-core"]
@@ -42,4 +43,4 @@ max-line-length = "119"
 line-length = 119
 
 [tool.pytest.ini_options]
-pythonpath = [".","hw14"]
+pythonpath = ["hw14"]

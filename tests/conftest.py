@@ -2,6 +2,7 @@ from datetime import datetime
 import os
 from pathlib import Path
 import sys
+from unittest.mock import MagicMock
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
@@ -52,19 +53,25 @@ def client(session):
     yield TestClient(app)
 
 
+# @pytest.fixture(scope="module")
+# def get_contact(contact_id):
+#     result = {
+#         "id": 1,
+#         "first_name": "aaaa",
+#         "last_name": "bbbbb",
+#         "email": "aaa@uu.cc",
+#         "phone": None,
+#         "birthday": None,
+#         "comments": None,
+#         "favorite": False,
+#         "created_at": datetime.now(),
+#         "updated_at": datetime.now(),
+#         "user": {"id": int, "username": "user1", "email": "aass@www.ii", "avatar": None, "role": "user"},
+#     }
+#     return result
+
+
 @pytest.fixture(scope="module")
-def get_contact(contact_id):
-    result = {
-        "id": 1,
-        "first_name": "aaaa",
-        "last_name": "bbbbb",
-        "email": "aaa@uu.cc",
-        "phone": None,
-        "birthday": None,
-        "comments": None,
-        "favorite": False,
-        "created_at": datetime.now(),
-        "updated_at": datetime.now(),
-        "user": {"id": int, "username": "user1", "email": "aass@www.ii", "avatar": None, "role": "user"},
-    }
-    return result
+def user():
+    return {"username": "lexxaiedu", "email": "lexxaiedu@example.com", "password": "qwerty"}
+

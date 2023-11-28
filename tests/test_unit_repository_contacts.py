@@ -76,6 +76,7 @@ class TestContactsRepository (unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result.email, body.email)
         self.assertEqual(result.phone, body.phone)
         self.assertTrue(hasattr(result, "id"))
+        self.assertEqual(result.user_id, self.user.id)
 
     async def test_remove_contact_found(self):
         contact = Contact()

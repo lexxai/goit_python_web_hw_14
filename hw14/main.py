@@ -28,20 +28,20 @@ handler.setFormatter(colorlog.ColoredFormatter("%(yellow)s%(asctime)s - %(name)s
 logger.addHandler(handler)
 
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    logger.debug("lifespan before")
-    try:
-        await startup()
-    except redis.ConnectionError as err:
-        logger.error(f"redis err: {err}")
-    except Exception as err:
-        logger.error(f"other app err: {err}")
-    yield
-    logger.debug("lifespan after")
+# @asynccontextmanager
+# async def lifespan(app: FastAPI):
+#     logger.debug("lifespan before")
+#     try:
+#         await startup()
+#     except redis.ConnectionError as err:
+#         logger.error(f"redis err: {err}")
+#     except Exception as err:
+#         logger.error(f"other app err: {err}")
+#     yield
+#     logger.debug("lifespan after")
 
 
-# lifespan = None
+lifespan = None
 
 
 app = FastAPI(lifespan=lifespan)  # type: ignore
@@ -94,12 +94,12 @@ def healthchecker(db: Session = Depends(get_db)):
 app.include_router(
     contacts.router,
     prefix="/api",
-    dependencies=[Depends(RateLimiter(times=settings.reate_limiter_times, seconds=settings.reate_limiter_seconds))],
+    # dependencies=[Depends(RateLimiter(times=settings.reate_limiter_times, seconds=settings.reate_limiter_seconds))],
 )
 app.include_router(
     auth.router,
     prefix="/api/auth",
-    dependencies=[Depends(RateLimiter(times=settings.reate_limiter_times, seconds=settings.reate_limiter_seconds))],
+    # dependencies=[Depends(RateLimiter(times=settings.reate_limiter_times, seconds=settings.reate_limiter_seconds))],
 )
 app.include_router(users.router, prefix="/api")
 
