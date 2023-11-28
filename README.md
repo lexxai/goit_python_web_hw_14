@@ -48,6 +48,8 @@ poetry update
 ## 3. Pytest
 ### 3.1 Repository contacts
 ![](doc/pytest_01.png)
+### 3.2 Route auth, users
+![](doc/pytest_02.png)
 
 
 

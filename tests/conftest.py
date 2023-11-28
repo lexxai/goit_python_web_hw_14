@@ -13,9 +13,9 @@ sys.path.append(hw_path)
 # print(f"{hw_path=}", sys.path)
 os.environ["PYTHONPATH"] += os.pathsep + hw_path
 
-from hw14.main import app
-from hw14.src.database.models import Base
-from hw14.src.database.db import get_db
+from main import app
+from src.database.models import Base
+from src.database.db import get_db
 
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
