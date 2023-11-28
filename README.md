@@ -54,6 +54,12 @@ poetry update
 ![](doc/pytest_03.png)
 
 
+## 4. Docker
+
+![](doc/docker_01.png)
+
+Docker Hub url: https://hub.docker.com/r/lexxai/web_hw14
+
 
 
 

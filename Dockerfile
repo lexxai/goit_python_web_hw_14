@@ -14,8 +14,9 @@ WORKDIR $APP_HOME
 # COPY . .
 # COPY .env .env
 COPY run.sh run.sh 
-COPY hw13/ hw13/
+COPY hw14/ hw14/
 COPY requirements.txt requirements.txt
+COPY tests/ tests/
 
 # Встановимо залежності всередині контейнера
 # RUN pip install -r requirements.txt 
