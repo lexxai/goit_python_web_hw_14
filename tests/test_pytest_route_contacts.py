@@ -13,7 +13,7 @@ from src.database.models import Contact, User
 from src.shemas.contact import ContactModel
 
 
-def test_create_user(client, session, user, monkeypatch):
+def create_user(client, session, user, monkeypatch):
     mock_send_email = MagicMock()
     monkeypatch.setattr("src.services.emails.send_email", mock_send_email)
     response = client.post(
@@ -39,10 +39,16 @@ def get_access_token_user(client, user):
     return f"Bearer {access_token}"
 
 
-def test_create_contact(client, contact, user ):
-    access_token = get_access_token_user(client, user)
+
+@pytest.fixture()
+def token(client, user, session, monkeypatch):
+    create_user(client, session, user, monkeypatch)
+    return get_access_token_user(client, user)
+
+
+def test_create_contact(client, contact, token ):
     headers = {
-        "Authorization": access_token
+        "Authorization": token
     }
     response = client.post("/api/contacts", headers=headers,  json=contact )
     assert response.status_code == 201, response.text
