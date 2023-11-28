@@ -76,7 +76,6 @@ def contact():
         "birthday": None,
         "comments": None,
         "favorite": False,
-        "user_id": 1
-        # "user": {"id": 1, "username": "lexxaiedu", "email": "lexxaiedu@example.com", "avatar": None, "role": "user"},
+        "user_id": 1,
     }
     return result

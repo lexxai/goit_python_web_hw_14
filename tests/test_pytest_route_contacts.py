@@ -11,8 +11,14 @@ os.environ["PYTHONPATH"] += os.pathsep + hw_path
 
 from src.database.models import Contact, User
 from src.shemas.contact import ContactModel
-#from src.services.auth.auth import auth_service
+
+# from src.services.auth.auth import auth_service
 from src.database import db
+
+
+class AsyncMagickMock(MagicMock):
+    async def __call__(self, *args, **kwargs):
+        return super(AsyncMagickMock, self).__call__(*args, **kwargs)
 
 
 def create_user(client, session, user, monkeypatch):
@@ -48,7 +54,7 @@ def token(client, user, session, monkeypatch):
 
 
 def s_test_create_contact_0(client, contact, token):
-    with patch.object(db, 'redis_pool') as r_mock:
+    with patch.object(db, "redis_pool") as r_mock:
         r_mock.get.return_value = None
         headers = {"Authorization": token}
         response = client.post("/api/contacts", headers=headers, json=contact)
@@ -58,15 +64,15 @@ def s_test_create_contact_0(client, contact, token):
         assert "id" in data
 
 
+async def nothing():
+    yield None
+
+
 def test_create_contact(client, contact, token):
     # SUPPRESS REDIS CONNECTION POOL  !!! is  redis_pool
-    with patch.object(db, 'redis_pool') as r_mock:
+    with patch.object(db, "redis_pool") as r_mock:
         r_mock.get.return_value = None
-        response = client.post(
-            "/api/contacts",
-            json=contact,
-            headers={"Authorization": token}
-        )
+        response = client.post("/api/contacts", json=contact, headers={"Authorization": token})
         assert response.status_code == 201, response.text
         data = response.json()
         assert data["first_name"] == contact.get("first_name")
