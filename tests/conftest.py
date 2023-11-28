@@ -8,7 +8,9 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-hw_path: str = str(Path(__file__).resolve().parent.parent.joinpath("hw14"))
+curr_path = Path(__file__).resolve().parent
+hw_path: str = str(curr_path.parent.joinpath("hw14"))
+
 sys.path.append(hw_path)
 # print(f"{hw_path=}", sys.path)
 os.environ["PYTHONPATH"] += os.pathsep + hw_path
@@ -17,8 +19,8 @@ from main import app
 from src.database.models import Base
 from src.database.db import get_db
 
-
-SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
+db_path = curr_path / "test.sqlite"
+SQLALCHEMY_DATABASE_URL = f"sqlite:///{db_path}"  
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
