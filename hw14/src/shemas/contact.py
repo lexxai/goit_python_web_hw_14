@@ -1,5 +1,5 @@
 from datetime import date, datetime
-from pydantic import BaseModel, Field, EmailStr
+from pydantic import BaseModel, ConfigDict, Field, EmailStr
 
 # from src.database.models import User
 from src.shemas.users import UserResponse
@@ -52,8 +52,10 @@ class ContactResponse(BaseModel):
     updated_at: datetime
     user: UserResponse
 
-    class Config:
-        from_attributes = True
+    # class Config:
+    #     from_attributes = True
+
+    model_config = ConfigDict(from_attributes=True)
 
     # email: str = Field(default="email@examole.com", pattern=r'^\w+@\w+\.\w+$')
 

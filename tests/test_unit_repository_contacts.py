@@ -31,10 +31,10 @@ from hw14.src.repository.contacts import (
 )
 
 
-class TestContacts(unittest.IsolatedAsyncioTestCase):
+class TestContactsRepository (unittest.IsolatedAsyncioTestCase):
     def setUp(self):
         self.session = MagicMock(spec=Session)
-        self.user = User(id=1)
+        self.user = User(id=1, email="some@email.ua")
 
     async def test_get_contacts(self):
         contacts = [Contact(), Contact(), Contact()]

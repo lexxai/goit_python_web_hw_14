@@ -2,7 +2,8 @@ from os import environ
 from pathlib import Path
 
 from dotenv import load_dotenv
-from pydantic_settings import BaseSettings
+from pydantic import ConfigDict, BaseModel
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 BASE_PATH_PROJECT = Path(__file__).resolve().parent.parent.parent
@@ -15,6 +16,12 @@ APP_ENV = environ.get("APP_ENV")
 
 
 class Settings(BaseSettings):
+    model_config = SettingsConfigDict(
+        extra="ignore",
+        env_file=BASE_PATH.joinpath(f".env-{APP_ENV}") if APP_ENV else BASE_PATH.joinpath(".env"),
+        env_file_encoding="utf-8",
+    )
+
     app_mode: str = "prod"
     app_version: str = "hw"
     app_name: str = "contacts"
@@ -39,11 +46,11 @@ class Settings(BaseSettings):
     SPHINX_DIRECTORY: str = str(BASE_PATH_PROJECT.joinpath("docs", "_build", "html"))
     STATIC_DIRECTORY: str = str(BASE_PATH_PROJECT.joinpath("static"))
 
-    class Config:
-        extra = "ignore"
-        # TESTED FIRST USED ENV variables, even if file defined.
-        env_file = BASE_PATH.joinpath(f".env-{APP_ENV}") if APP_ENV else BASE_PATH.joinpath(".env")
-        env_file_encoding = "utf-8"
+    # class Config:
+    #     extra = "ignore"
+    #     # TESTED FIRST USED ENV variables, even if file defined.
+    #     env_file = BASE_PATH.joinpath(f".env-{APP_ENV}") if APP_ENV else BASE_PATH.joinpath(".env")
+    #     env_file_encoding = "utf-8"
 
 
 settings = Settings()

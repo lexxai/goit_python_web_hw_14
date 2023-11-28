@@ -42,7 +42,12 @@ poetry update
 
 
 ## 2. Unittest
+### 2.1 Repository contacts
 ![](doc/unittest_01.png)
+
+## 3. Pytest
+### 3.1 Repository contacts
+![](doc/pytest_01.png)
 
 
 
