@@ -50,6 +50,8 @@ poetry update
 ![](doc/pytest_01.png)
 ### 3.2 Route auth, users
 ![](doc/pytest_02.png)
+### 3.2 Route contacts
+![](doc/pytest_03.png)
 
 
 
