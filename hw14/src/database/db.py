@@ -38,12 +38,14 @@ def create_redis():
     return redis.ConnectionPool(host=settings.redis_host, port=settings.redis_port, db=0, decode_responses=False)
 
 
-def get_redis() -> redis.Redis:
+def get_redis() -> redis.Redis| None:
     # Here, we re-use our connection pool
     # not creating a new one
     logger.debug("get_redis connection_pool")
-    connection = redis.Redis(connection_pool=redis_pool)
-    return connection
+    if redis_pool:
+        connection = redis.Redis(connection_pool=redis_pool)
+        return connection
+    logger.debug("get_redis connection_pool None")
 
 
 redis_pool: redis.ConnectionPool = create_redis()
