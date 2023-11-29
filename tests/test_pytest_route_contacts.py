@@ -65,12 +65,7 @@ def get_access_token_user(client, user):
     return f"Bearer {access_token}"
 
 
-@pytest.fixture()
-def mock_ratelimiter(monkeypatch):
-    mock_rate_limiter = AsyncMock()
-    monkeypatch.setattr("fastapi_limiter.FastAPILimiter.redis", mock_rate_limiter)
-    monkeypatch.setattr("fastapi_limiter.FastAPILimiter.identifier", mock_rate_limiter)
-    monkeypatch.setattr("fastapi_limiter.FastAPILimiter.http_callback", mock_rate_limiter)
+
 
 @pytest.fixture()
 def token(client, user, session, monkeypatch, mock_ratelimiter):

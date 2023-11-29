@@ -2,7 +2,7 @@ from datetime import datetime
 import os
 from pathlib import Path
 import sys
-from unittest.mock import MagicMock
+from unittest.mock import AsyncMock, MagicMock
 import pytest
 from fastapi.testclient import TestClient
 from fastapi_limiter.depends import RateLimiter
@@ -39,6 +39,14 @@ def session():
         yield db
     finally:
         db.close()
+
+
+@pytest.fixture()
+def mock_ratelimiter(monkeypatch):
+    mock_rate_limiter = AsyncMock()
+    monkeypatch.setattr("fastapi_limiter.FastAPILimiter.redis", mock_rate_limiter)
+    monkeypatch.setattr("fastapi_limiter.FastAPILimiter.identifier", mock_rate_limiter)
+    monkeypatch.setattr("fastapi_limiter.FastAPILimiter.http_callback", mock_rate_limiter)
 
 
 @pytest.fixture(scope="module")

@@ -108,7 +108,8 @@ app.include_router(
 app.include_router(
     auth.router,
     prefix="/api/auth",
-    # dependencies=[Depends(RateLimiter(times=settings.reate_limiter_times, seconds=settings.reate_limiter_seconds))],
+    dependencies=[Depends(get_limit)],
+    #dependencies=[Depends(RateLimiter(times=settings.reate_limiter_times, seconds=settings.reate_limiter_seconds))],
 )
 app.include_router(users.router, prefix="/api")
 
