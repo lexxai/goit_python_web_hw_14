@@ -52,11 +52,15 @@ app = FastAPI(lifespan=lifespan)  # type: ignore
 # @app.on_event("startup")
 async def startup():
     redis_live: bool | None = await db.check_redis()
-    if not redis_live:
+    if not redis_live: 
         db.redis_pool = False
+        app.dependency_overrides[get_redis] = deny_get_redis
         logger.debug("startup DISABLE REDIS THAT DOWN")
     else:
         await FastAPILimiter.init(get_redis())
+        app.dependency_overrides[get_limit] = RateLimiter(
+            times=settings.reate_limiter_times, seconds=settings.reate_limiter_seconds
+        )
         logger.debug("startup done")
 
 
@@ -79,12 +83,12 @@ async def deny_get_redis():
     return None
 
 
-if redis_pool:
-    app.dependency_overrides[get_limit] = RateLimiter(
-        times=settings.reate_limiter_times, seconds=settings.reate_limiter_seconds
-    )
-else:
-    app.dependency_overrides[get_redis] = deny_get_redis
+# if redis_pool:
+#     app.dependency_overrides[get_limit] = RateLimiter(
+#         times=settings.reate_limiter_times, seconds=settings.reate_limiter_seconds
+#     )
+# else:
+#     app.dependency_overrides[get_redis] = deny_get_redis
 
 
 def add_static(_app):
