@@ -53,7 +53,7 @@ app = FastAPI(lifespan=lifespan)  # type: ignore
 async def startup():
     redis_live: bool | None = await db.check_redis()
     if not redis_live: 
-        db.redis_pool = False
+        # db.redis_pool = False
         app.dependency_overrides[get_redis] = deny_get_redis
         logger.debug("startup DISABLE REDIS THAT DOWN")
     else:
