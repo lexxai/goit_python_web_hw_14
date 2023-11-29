@@ -43,6 +43,7 @@ def session():
 
 @pytest.fixture(scope="module")
 def client(session):
+
     # Dependency override
 
     class Empty:
@@ -61,7 +62,6 @@ def client(session):
         return None
     
     app.dependency_overrides[get_db] = override_get_db
-    app.dependency_overrides[get_limit] = override_get_limit
     app.dependency_overrides[get_redis] = override_get_redis
 
     yield TestClient(app)

@@ -1,7 +1,7 @@
 from datetime import datetime
 import os
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, patch, AsyncMock
 
 import pytest
 
@@ -41,6 +41,7 @@ class MockRedis:
 def create_user(client, session, user, monkeypatch):
     mock_send_email = MagicMock()
     monkeypatch.setattr("src.services.emails.send_email", mock_send_email)
+    
     response = client.post(
         "/api/auth/signup",
         json=user,
@@ -65,7 +66,14 @@ def get_access_token_user(client, user):
 
 
 @pytest.fixture()
-def token(client, user, session, monkeypatch):
+def mock_ratelimiter(monkeypatch):
+    mock_rate_limiter = AsyncMock()
+    monkeypatch.setattr("fastapi_limiter.FastAPILimiter.redis", mock_rate_limiter)
+    monkeypatch.setattr("fastapi_limiter.FastAPILimiter.identifier", mock_rate_limiter)
+    monkeypatch.setattr("fastapi_limiter.FastAPILimiter.http_callback", mock_rate_limiter)
+
+@pytest.fixture()
+def token(client, user, session, monkeypatch, mock_ratelimiter):
     # print(f"token {db.redis_pool=}")
     create_user(client, session, user, monkeypatch)
     return get_access_token_user(client, user)

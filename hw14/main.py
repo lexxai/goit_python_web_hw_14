@@ -28,20 +28,20 @@ handler.setFormatter(colorlog.ColoredFormatter("%(yellow)s%(asctime)s - %(name)s
 logger.addHandler(handler)
 
 
-# @asynccontextmanager
-# async def lifespan(app: FastAPI):
-#     logger.debug("lifespan before")
-#     try:
-#         await startup()
-#     except redis.ConnectionError as err:
-#         logger.error(f"redis err: {err}")
-#     except Exception as err:
-#         logger.error(f"other app err: {err}")
-#     yield
-#     logger.debug("lifespan after")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    logger.debug("lifespan before")
+    try:
+        await startup()
+    except redis.ConnectionError as err:
+        logger.error(f"redis err: {err}")
+    except Exception as err:
+        logger.error(f"other app err: {err}")
+    yield
+    logger.debug("lifespan after")
 
 
-lifespan = None
+#lifespan = None
 
 
 app = FastAPI(lifespan=lifespan)  # type: ignore
@@ -66,7 +66,7 @@ app.add_middleware(
 async def get_limit():
     return None
 
-redis_pool = False
+# redis_pool = False
 
 if redis_pool:
     app.dependency_overrides[get_limit] = RateLimiter(times=settings.reate_limiter_times, seconds=settings.reate_limiter_seconds)
