@@ -2,9 +2,10 @@ from datetime import datetime
 import os
 from pathlib import Path
 import sys
-from unittest.mock import MagicMock
+from unittest.mock import AsyncMock, MagicMock
 import pytest
 from fastapi.testclient import TestClient
+from fastapi_limiter.depends import RateLimiter
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -15,9 +16,9 @@ sys.path.append(hw_path)
 # print(f"{hw_path=}", sys.path)
 os.environ["PYTHONPATH"] += os.pathsep + hw_path
 
-from main import app
+from main import app, get_limit
 from src.database.models import Base
-from src.database.db import get_db
+from src.database.db import get_db, get_redis
 
 db_path = curr_path / "test.sqlite"
 SQLALCHEMY_DATABASE_URL = f"sqlite:///{db_path}"
@@ -40,9 +41,21 @@ def session():
         db.close()
 
 
+@pytest.fixture()
+def mock_ratelimiter(monkeypatch):
+    mock_rate_limiter = AsyncMock()
+    monkeypatch.setattr("fastapi_limiter.FastAPILimiter.redis", mock_rate_limiter)
+    monkeypatch.setattr("fastapi_limiter.FastAPILimiter.identifier", mock_rate_limiter)
+    monkeypatch.setattr("fastapi_limiter.FastAPILimiter.http_callback", mock_rate_limiter)
+
+
 @pytest.fixture(scope="module")
 def client(session):
+
     # Dependency override
+
+    class Empty:
+        ...
 
     def override_get_db():
         try:
@@ -50,7 +63,14 @@ def client(session):
         finally:
             session.close()
 
+    async def override_get_limit():
+        return None
+
+    async def override_get_redis():
+        return None
+    
     app.dependency_overrides[get_db] = override_get_db
+    app.dependency_overrides[get_redis] = override_get_redis
 
     yield TestClient(app)
 

@@ -54,7 +54,41 @@ poetry update
 ![](doc/pytest_03.png)
 
 
-## 4. Docker
+## 4. Pytest-cov  Cover
+### Install:
+
+```
+poetry add pytest-cov -G test
+```
+### Run terminal report:
+
+```
+pytest --cov=. --cov-report term  tests/
+```
+![pytest_cov terminal](doc/pytest_cov-01.png)
+
+### Run HTML report to folder htmlcov
+```
+>pytest --cov=. --cov-report html  tests/  
+========================================================================== test session starts ===========================================================================
+platform win32 -- Python 3.11.6, pytest-7.4.3, pluggy-1.3.0
+rootdir: C:\Users\lexxa\Developments\GoIT\Python\Python 15\Web\goit_python_web_hw_14
+configfile: pyproject.toml
+plugins: anyio-3.7.1, Faker-20.1.0, cov-4.1.0, mock-3.12.0
+collected 28 items
+
+tests\test_pytest_route_contacts.py ........                                                                                                                        [ 28%]
+tests\test_pytest_route_users.py ......                                                                                                                             [ 50%]
+tests\test_unit_repository_contacts.py ..............                                                                                                               [100%]
+
+---------- coverage: platform win32, python 3.11.6-final-0 -----------
+Coverage HTML written to dir htmlcov
+```
+![pytest_cov html](doc/pytest_cov-02.png)
+![pytest_cov html](doc/pytest_cov-03.jpeg)
+
+
+## 5. Docker
 
 ![](doc/docker_01.png)
 
