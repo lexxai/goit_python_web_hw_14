@@ -17,7 +17,7 @@ from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from src.conf.config import settings
-from src.database.db import get_db, get_redis
+from src.database.db import get_db, get_redis, redis_pool
 from src.routes import contacts, auth, users
 
 logger = logging.getLogger(f"{settings.app_name}")
@@ -63,6 +63,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+async def get_limit():
+    return None
+
+redis_pool = False
+
+if redis_pool:
+    app.dependency_overrides[get_limit] = RateLimiter(times=settings.reate_limiter_times, seconds=settings.reate_limiter_seconds)
+
 def add_static(_app):
     _app.mount(path="/static", app=StaticFiles(directory=settings.STATIC_DIRECTORY), name="static")
     _app.mount(path="/sphinx", app=StaticFiles(directory=settings.SPHINX_DIRECTORY, html=True), name="sphinx")
@@ -94,7 +102,8 @@ def healthchecker(db: Session = Depends(get_db)):
 app.include_router(
     contacts.router,
     prefix="/api",
-    # dependencies=[Depends(RateLimiter(times=settings.reate_limiter_times, seconds=settings.reate_limiter_seconds))],
+   dependencies=[Depends(get_limit)],
+   # dependencies=[Depends(RateLimiter(times=settings.reate_limiter_times, seconds=settings.reate_limiter_seconds))],
 )
 app.include_router(
     auth.router,

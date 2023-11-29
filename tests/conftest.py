@@ -5,6 +5,7 @@ import sys
 from unittest.mock import MagicMock
 import pytest
 from fastapi.testclient import TestClient
+from fastapi_limiter.depends import RateLimiter
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -15,9 +16,9 @@ sys.path.append(hw_path)
 # print(f"{hw_path=}", sys.path)
 os.environ["PYTHONPATH"] += os.pathsep + hw_path
 
-from main import app
+from main import app, get_limit
 from src.database.models import Base
-from src.database.db import get_db
+from src.database.db import get_db, get_redis
 
 db_path = curr_path / "test.sqlite"
 SQLALCHEMY_DATABASE_URL = f"sqlite:///{db_path}"
@@ -44,13 +45,24 @@ def session():
 def client(session):
     # Dependency override
 
+    class Empty:
+        ...
+
     def override_get_db():
         try:
             yield session
         finally:
             session.close()
 
+    async def override_get_limit():
+        return None
+
+    async def override_get_redis():
+        return None
+    
     app.dependency_overrides[get_db] = override_get_db
+    app.dependency_overrides[get_limit] = override_get_limit
+    app.dependency_overrides[get_redis] = override_get_redis
 
     yield TestClient(app)
 
