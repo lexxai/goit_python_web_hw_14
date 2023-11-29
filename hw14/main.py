@@ -42,6 +42,7 @@ async def lifespan(app: FastAPI):
 
 
 #lifespan = None
+redis_pool = False
 
 
 app = FastAPI(lifespan=lifespan)  # type: ignore
@@ -49,8 +50,9 @@ app = FastAPI(lifespan=lifespan)  # type: ignore
 
 # @app.on_event("startup")
 async def startup():
-    await FastAPILimiter.init(get_redis())
-    logger.debug("startup done")
+    if redis_pool:
+        await FastAPILimiter.init(get_redis())
+        logger.debug("startup done")
 
 
 origins = ["http://localhost:3002"]
@@ -66,7 +68,7 @@ app.add_middleware(
 async def get_limit():
     return None
 
-# redis_pool = False
+
 
 if redis_pool:
     app.dependency_overrides[get_limit] = RateLimiter(times=settings.reate_limiter_times, seconds=settings.reate_limiter_seconds)
