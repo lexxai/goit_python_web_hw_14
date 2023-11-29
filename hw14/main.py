@@ -18,6 +18,7 @@ from sqlalchemy.orm import Session
 
 from src.conf.config import settings
 from src.database.db import get_db, get_redis, redis_pool
+from src.database import db
 from src.routes import contacts, auth, users
 
 logger = logging.getLogger(f"{settings.app_name}")
@@ -41,8 +42,8 @@ async def lifespan(app: FastAPI):
     logger.debug("lifespan after")
 
 
-#lifespan = None
-redis_pool = False
+# lifespan = None
+# redis_pool = False
 
 
 app = FastAPI(lifespan=lifespan)  # type: ignore
@@ -50,7 +51,11 @@ app = FastAPI(lifespan=lifespan)  # type: ignore
 
 # @app.on_event("startup")
 async def startup():
-    if redis_pool:
+    redis_live: bool | None = await db.check_redis()
+    if not redis_live:
+        db.redis_pool = False
+        logger.debug("startup DISABLE REDIS THAT DOWN")
+    else:
         await FastAPILimiter.init(get_redis())
         logger.debug("startup done")
 
@@ -65,24 +70,36 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 async def get_limit():
     return None
 
 
+async def deny_get_redis():
+    return None
+
 
 if redis_pool:
-    app.dependency_overrides[get_limit] = RateLimiter(times=settings.reate_limiter_times, seconds=settings.reate_limiter_seconds)
+    app.dependency_overrides[get_limit] = RateLimiter(
+        times=settings.reate_limiter_times, seconds=settings.reate_limiter_seconds
+    )
+else:
+    app.dependency_overrides[get_redis] = deny_get_redis
+
 
 def add_static(_app):
     _app.mount(path="/static", app=StaticFiles(directory=settings.STATIC_DIRECTORY), name="static")
     _app.mount(path="/sphinx", app=StaticFiles(directory=settings.SPHINX_DIRECTORY, html=True), name="sphinx")
+
 
 templates = Jinja2Templates(directory="templates")
 
 
 @app.get("/", response_class=HTMLResponse)
 async def main(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request, "tilte": f"{settings.app_version.upper()} APP {settings.app_name.upper()}"})
+    return templates.TemplateResponse(
+        "index.html", {"request": request, "tilte": f"{settings.app_version.upper()} APP {settings.app_name.upper()}"}
+    )
 
 
 @app.get("/api/healthchecker")
@@ -104,14 +121,14 @@ def healthchecker(db: Session = Depends(get_db)):
 app.include_router(
     contacts.router,
     prefix="/api",
-   dependencies=[Depends(get_limit)],
-   # dependencies=[Depends(RateLimiter(times=settings.reate_limiter_times, seconds=settings.reate_limiter_seconds))],
+    dependencies=[Depends(get_limit)],
+    # dependencies=[Depends(RateLimiter(times=settings.reate_limiter_times, seconds=settings.reate_limiter_seconds))],
 )
 app.include_router(
     auth.router,
     prefix="/api/auth",
     dependencies=[Depends(get_limit)],
-    #dependencies=[Depends(RateLimiter(times=settings.reate_limiter_times, seconds=settings.reate_limiter_seconds))],
+    # dependencies=[Depends(RateLimiter(times=settings.reate_limiter_times, seconds=settings.reate_limiter_seconds))],
 )
 app.include_router(users.router, prefix="/api")
 
