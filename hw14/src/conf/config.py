@@ -38,6 +38,7 @@ class Settings(BaseSettings):
     mail_from_name: str = ""
     redis_host: str = "localhost"
     redis_port: int = 6379
+    redis_password: str = ""
     cloudinary_name: str = "some_name"
     cloudinary_api_key: str = "0000000000000"
     cloudinary_api_secret: str = "some_secret"

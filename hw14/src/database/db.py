@@ -35,7 +35,13 @@ def get_db():
 
 
 def create_redis():
-    return redis.ConnectionPool(host=settings.redis_host, port=settings.redis_port, db=0, decode_responses=False)
+    return redis.ConnectionPool(
+        host=settings.redis_host,
+        port=settings.redis_port,
+        password=settings.redis_password,
+        db=0,
+        decode_responses=False,
+    )
 
 
 def get_redis() -> redis.Redis | None:
