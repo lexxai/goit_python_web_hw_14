@@ -1,4 +1,4 @@
-const BASE_URL = "";
+//const BASE_URL = "";
 
 function setCookie(cname, cvalue, expire) {
   const d = new Date(expire);

@@ -1,6 +1,6 @@
 let token = localStorage.getItem("access_token");
 
-const BASE_URL = "";
+//const BASE_URL = "";
 
 //console.log(`token=${token}`);
 
