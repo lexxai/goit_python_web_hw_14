@@ -1,9 +1,10 @@
 import logging
 import time
 import colorlog
+import pathlib
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Path, Query, Depends, HTTPException, Request, status
-from fastapi.responses import HTMLResponse
+from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
@@ -91,12 +92,23 @@ async def deny_get_redis():
 #     app.dependency_overrides[get_redis] = deny_get_redis
 
 
+static_dir: pathlib.Path = pathlib.Path(settings.STATIC_DIRECTORY)
+
 def add_static(_app):
-    _app.mount(path="/static", app=StaticFiles(directory=settings.STATIC_DIRECTORY), name="static")
+    # _app.mount(path="/static", app=StaticFiles(directory=settings.STATIC_DIRECTORY), name="static")
     _app.mount(path="/sphinx", app=StaticFiles(directory=settings.SPHINX_DIRECTORY, html=True), name="sphinx")
 
 
 templates = Jinja2Templates(directory="templates")
+
+
+@app.get("/static/{file_path:path}")
+async def function(file_path: str):
+    response = FileResponse( str(static_dir.joinpath(file_path)))
+    response.headers["Cache-Control"] = "Cache-Control: private, max-age=3600"
+    response.headers["X-FASTAPI"] = "lexxai"
+    return response
+
 
 
 @app.get("/", response_class=HTMLResponse)
