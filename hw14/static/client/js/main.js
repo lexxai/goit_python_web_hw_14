@@ -12,7 +12,7 @@ form?.addEventListener("submit", async (e) => {
   const t = e.target;
   const username = t.username.value;
   const password = t.password.value;
-  const URL = "http://localhost:9000/api/auth/login";
+  const URL = "/api/auth/login";
   await fetch(URL, {
     method: "POST",
     headers: {
