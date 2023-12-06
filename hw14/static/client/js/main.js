@@ -1,3 +1,5 @@
+const BASE_URL = "";
+
 function setCookie(cname, cvalue, expire) {
   const d = new Date(expire);
   const expires = "expires=" + d.toUTCString();
@@ -12,7 +14,7 @@ form?.addEventListener("submit", async (e) => {
   const t = e.target;
   const username = t.username.value;
   const password = t.password.value;
-  const URL = "/api/auth/login";
+  const URL = `${BASE_URL}/api/auth/login`;
   await fetch(URL, {
     method: "POST",
     headers: {
