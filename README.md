@@ -94,6 +94,9 @@ Coverage HTML written to dir htmlcov
 
 Docker Hub url: https://hub.docker.com/r/lexxai/web_hw14
 
+## 6. DEPLOY to koyeb.com
+[DEPLOY](README-DEPL.md)
+
 
 
 

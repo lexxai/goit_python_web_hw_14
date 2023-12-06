@@ -1,5 +1,10 @@
 #!/bin/bash
 
+env
+
+echo SQLALCHEMY_DATABASE_URL
+echo $SQLALCHEMY_DATABASE_URL
+
 echo Sleep 2....
 sleep 2
 
