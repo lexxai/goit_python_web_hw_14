@@ -1,9 +1,10 @@
 import logging
 import time
+import typing
 import colorlog
 import pathlib
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, Path, Query, Depends, HTTPException, Request, status
+from fastapi import FastAPI, Path, Query, Depends, HTTPException, Request, Response, status
 from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -53,7 +54,7 @@ app = FastAPI(lifespan=lifespan)  # type: ignore
 # @app.on_event("startup")
 async def startup():
     redis_live: bool | None = await db.check_redis()
-    if not redis_live: 
+    if not redis_live:
         # db.redis_pool = False
         app.dependency_overrides[get_redis] = deny_get_redis
         logger.debug("startup DISABLE REDIS THAT DOWN")
@@ -94,21 +95,36 @@ async def deny_get_redis():
 
 static_dir: pathlib.Path = pathlib.Path(settings.STATIC_DIRECTORY)
 
+
+class StaticFilesCache(StaticFiles):
+    def __init__(self, *args, cachecontrol="public, max-age=31536000, s-maxage=31536000, immutable", **kwargs):
+        self.cachecontrol = cachecontrol
+        super().__init__(*args, **kwargs)
+
+    def file_response(self, *args, **kwargs) -> Response:
+        resp: Response = super().file_response(*args, **kwargs)
+        resp.headers.setdefault("Cache-Control", self.cachecontrol)
+        return resp
+
+
 def add_static(_app):
-    # _app.mount(path="/static", app=StaticFiles(directory=settings.STATIC_DIRECTORY), name="static")
-    _app.mount(path="/sphinx", app=StaticFiles(directory=settings.SPHINX_DIRECTORY, html=True), name="sphinx")
+    _app.mount(
+        path="/static",
+        app=StaticFilesCache(directory=settings.STATIC_DIRECTORY, cachecontrol="private, max-age=3600"),
+        name="static",
+    )
+    _app.mount(path="/sphinx", app=StaticFilesCache(directory=settings.SPHINX_DIRECTORY, html=True), name="sphinx")
 
 
 templates = Jinja2Templates(directory="templates")
 
 
-@app.get("/static/{file_path:path}")
-async def function(file_path: str):
-    response = FileResponse( str(static_dir.joinpath(file_path)))
-    response.headers["Cache-Control"] = "Cache-Control: private, max-age=3600"
-    response.headers["X-FASTAPI"] = "lexxai"
-    return response
-
+# @app.get("/static/{file_path}")
+# async def get_static(file_path: str):
+#     response = FileResponse( str(static_dir.joinpath(file_path)))
+#     response.headers["Cache-Control"] = "Cache-Control: private, max-age=3600"
+#     response.headers["X-FASTAPI"] = "lexxai"
+#     return response
 
 
 @app.get("/", response_class=HTMLResponse)
